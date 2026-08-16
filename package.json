@@ -2,7 +2,7 @@
   "name": "luma-chatbot",
   "version": "1.0.0",
   "private": true,
-  "description": "A simple all-purpose chatbot powered by the OpenAI Responses API.",
+  "description": "A simple all-purpose chatbot powered by the Gemini API.",
   "scripts": {
     "start": "node server.js",
     "check": "node --check server.js && node --check app.js"

@@ -26,8 +26,8 @@ const server = http.createServer(async (request, response) => {
 });
 
 async function handleChatRequest(request, response) {
-  if (!process.env.OPENAI_API_KEY) {
-    sendJson(response, 500, { error: 'Missing OPENAI_API_KEY. Add it to your .env file, then restart the server.' });
+  if (!process.env.GEMINI_API_KEY) {
+    sendJson(response, 500, { error: 'Missing GEMINI_API_KEY. Add it to your .env file, then restart the server.' });
     return;
   }
 
@@ -45,27 +45,30 @@ async function handleChatRequest(request, response) {
       return;
     }
 
-    const openAIResponse = await fetch('https://api.openai.com/v1/responses', {
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL || 'gemini-3.5-flash'}:generateContent`, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${process.env.OPENAI_API_KEY}`,
+        'x-goog-api-key': process.env.GEMINI_API_KEY,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: process.env.OPENAI_MODEL || 'gpt-5.6',
-        instructions: 'You are Luma, a helpful all-purpose assistant. Give accurate, practical, and well-structured answers. Match the user\'s language. Be concise by default, but explain important steps clearly. If a request is ambiguous, ask one focused follow-up question.',
-        input: sanitizedMessages,
-        store: false
+        systemInstruction: {
+          parts: [{ text: 'You are Luma, a helpful all-purpose assistant. Give accurate, practical, and well-structured answers. Match the user\'s language. Be concise by default, but explain important steps clearly. If a request is ambiguous, ask one focused follow-up question.' }]
+        },
+        contents: sanitizedMessages.map((message) => ({
+          role: message.role === 'assistant' ? 'model' : 'user',
+          parts: [{ text: message.content }]
+        }))
       })
     });
 
-    const payload = await openAIResponse.json();
-    if (!openAIResponse.ok) {
-      sendJson(response, openAIResponse.status, { error: payload.error?.message || 'The AI service returned an error.' });
+    const payload = await geminiResponse.json();
+    if (!geminiResponse.ok) {
+      sendJson(response, geminiResponse.status, { error: payload.error?.message || 'The AI service returned an error.' });
       return;
     }
 
-    const answer = payload.output_text || extractTextOutput(payload);
+    const answer = extractTextOutput(payload);
     sendJson(response, 200, { answer: answer || 'I could not generate a response. Please try again.' });
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected server error.';
@@ -74,10 +77,8 @@ async function handleChatRequest(request, response) {
 }
 
 function extractTextOutput(payload) {
-  return (payload.output || [])
-    .flatMap((item) => item.content || [])
-    .filter((content) => content.type === 'output_text')
-    .map((content) => content.text)
+  return (payload.candidates?.[0]?.content?.parts || [])
+    .map((part) => part.text || '')
     .join('\n');
 }
 
