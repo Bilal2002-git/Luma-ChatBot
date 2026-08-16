@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="description" content="Luma is a calm, all-purpose AI workspace for thinking, creating, and getting things done." />
+    <title>Luma — Your all-purpose AI</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Manrope:wght@500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <div class="brand-row"><div class="brand-mark">✦</div><span class="brand-name">luma</span><button class="icon-button sidebar-close" id="sidebarClose" aria-label="Close sidebar">×</button></div>
+        <button class="new-chat-button" id="newChatButton"><span>＋</span> New conversation</button>
+        <div class="sidebar-section"><p class="section-label">Your space</p><nav class="main-nav" aria-label="Main navigation"><button class="nav-item active"><span class="nav-icon">⌂</span> Home</button><button class="nav-item"><span class="nav-icon">◷</span> History</button><button class="nav-item"><span class="nav-icon">▱</span> Saved prompts</button></nav></div>
+        <div class="sidebar-section recent-section"><p class="section-label">Recent</p><div id="conversationList" class="conversation-list"></div></div>
+        <div class="sidebar-footer"><div class="upgrade-card"><div class="upgrade-icon">✧</div><div><strong>Unlock more with Pro</strong><span>Priority access &amp; unlimited chats</span></div><button class="upgrade-arrow" aria-label="View Pro">→</button></div><button class="profile-row"><span class="avatar">AR</span><span class="profile-copy"><strong>Alex Rivera</strong><small>Free plan</small></span><span class="more">•••</span></button></div>
+      </aside>
+      <main class="main-content">
+        <header class="topbar"><button class="icon-button menu-button" id="menuButton" aria-label="Open sidebar">☰</button><div class="breadcrumb"><span class="muted">Workspace</span><span>/</span><strong id="breadcrumbTitle">New conversation</strong></div><div class="topbar-actions"><button class="icon-button" title="Search">⌕</button><button class="icon-button notification-button" title="Notifications">♧<i></i></button><div class="mini-avatar">AR</div></div></header>
+        <section class="chat-layout"><div class="chat-column"><div class="welcome-block" id="welcomeBlock"><div class="eyebrow"><span class="sparkle">✦</span> Your thinking partner</div><h1>Good morning, Alex<span class="dot">.</span></h1><p>What would you like to make, learn, or figure out today?</p></div><div class="messages" id="messages" aria-live="polite"></div><div class="suggestions" id="suggestions"><button class="suggestion-card" data-prompt="Help me plan my week with focus and balance"><span class="suggestion-icon lilac">◈</span><span><strong>Plan my week</strong><small>Turn ideas into an achievable plan</small></span><b>→</b></button><button class="suggestion-card" data-prompt="Help me brainstorm a fresh idea for a side project"><span class="suggestion-icon peach">✦</span><span><strong>Brainstorm ideas</strong><small>Explore possibilities together</small></span><b>→</b></button><button class="suggestion-card" data-prompt="Explain a complex topic to me in a simple way"><span class="suggestion-icon mint">⌁</span><span><strong>Learn something new</strong><small>Make the complicated feel simple</small></span><b>→</b></button></div><div class="composer-wrap"><form class="composer" id="composer"><textarea id="messageInput" rows="1" placeholder="Ask Luma anything..." aria-label="Message Luma"></textarea><div class="composer-tools"><div class="left-tools"><button type="button" class="tool-button" title="Attach a file">＋</button><button type="button" class="tool-button" title="Voice input">◉</button><span class="tool-hint">Luma can make mistakes. Check important info.</span></div><button class="send-button" type="submit" aria-label="Send message">↑</button></div></form></div></div>
+          <aside class="insight-panel"><div class="panel-heading"><span>Quick access</span><button class="icon-button">•••</button></div><div class="mode-card"><div class="mode-orb">✦</div><div><strong>Balanced mode</strong><p>Thoughtful &amp; clear responses</p></div><span class="chevron">⌄</span></div><div class="panel-divider"></div><p class="section-label">Try asking</p><div class="prompt-list"><button data-prompt="Write a warm, concise email declining a meeting"><span>✎</span> Write an email</button><button data-prompt="Give me a five-day healthy dinner plan with a grocery list"><span>♨</span> Create a meal plan</button><button data-prompt="Help me prepare for a difficult conversation with a colleague"><span>◌</span> Prepare for a conversation</button><button data-prompt="Summarize the key concepts I need to know about investing"><span>▤</span> Break down a topic</button></div><div class="tip-card"><span class="tip-star">✦</span><div><strong>Small tip</strong><p>Give Luma context and a goal for more useful answers.</p></div></div></aside>
+        </section>
+      </main>
+    </div>
+    <script src="app.js"></script>
+  </body>
+</html>
