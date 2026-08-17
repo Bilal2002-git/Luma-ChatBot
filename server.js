@@ -45,11 +45,12 @@ async function handleChatRequest(request, response) {
       return;
     }
 
-    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL || 'gemini-3.5-flash'}:generateContent`, {
+    const geminiResponse = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/${process.env.GEMINI_MODEL || 'gemini-3.5-flash'}:streamGenerateContent?alt=sse`, {
       method: 'POST',
       headers: {
         'x-goog-api-key': process.env.GEMINI_API_KEY,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Accept': 'text/event-stream'
       },
       body: JSON.stringify({
         systemInstruction: {
@@ -62,24 +63,30 @@ async function handleChatRequest(request, response) {
       })
     });
 
-    const payload = await geminiResponse.json();
     if (!geminiResponse.ok) {
+      const payload = await geminiResponse.json().catch(() => ({}));
       sendJson(response, geminiResponse.status, { error: payload.error?.message || 'The AI service returned an error.' });
       return;
     }
 
-    const answer = extractTextOutput(payload);
-    sendJson(response, 200, { answer: answer || 'I could not generate a response. Please try again.' });
+    response.writeHead(200, {
+      'Content-Type': 'text/event-stream; charset=utf-8',
+      'Cache-Control': 'no-cache, no-transform',
+      'Connection': 'keep-alive',
+      'X-Accel-Buffering': 'no'
+    });
+
+    for await (const chunk of geminiResponse.body) response.write(chunk);
+    response.end();
   } catch (error) {
     const message = error instanceof Error ? error.message : 'Unexpected server error.';
+    if (response.headersSent) {
+      response.write(`event: error\ndata: ${JSON.stringify({ error: message })}\n\n`);
+      response.end();
+      return;
+    }
     sendJson(response, 500, { error: message });
   }
-}
-
-function extractTextOutput(payload) {
-  return (payload.candidates?.[0]?.content?.parts || [])
-    .map((part) => part.text || '')
-    .join('\n');
 }
 
 function readJsonBody(request) {
